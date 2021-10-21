@@ -35,6 +35,16 @@ var options = {
   token: null
 };
 
+
+// get html element
+const video = document.getElementById("input-video");
+// video.style.display = "none";
+const canvas = document.getElementById("output-canvas");
+const ctx = canvas.getContext("2d");
+// canvas.style.display = "none";
+
+
+
 /*
  * When this page is called with parameters in the URL, this procedure
  * attempts to join a Video Call channel using those parameters.
@@ -88,6 +98,71 @@ $("#leave").click(function (e) {
   leave();
 })
 
+
+// holistic
+function onResults(results) {
+  ctx.save();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(results.segmentationMask, 0, 0,
+                      canvas.width, canvas.height);
+
+  // Only overwrite existing pixels.
+  ctx.globalCompositeOperation = 'source-in';
+  ctx.fillStyle = '#00FF00';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Only overwrite missing pixels.
+  ctx.globalCompositeOperation = 'destination-atop';
+  ctx.drawImage(
+      results.image, 0, 0, canvas.width, canvas.height);
+
+  ctx.globalCompositeOperation = 'source-over';
+  drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS,
+                 {color: '#00FF00', lineWidth: 4});
+  drawLandmarks(ctx, results.poseLandmarks,
+                {color: '#FF0000', lineWidth: 2});
+  drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION,
+                 {color: '#C0C0C070', lineWidth: 1});
+  drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS,
+                 {color: '#CC0000', lineWidth: 5});
+  drawLandmarks(ctx, results.leftHandLandmarks,
+                {color: '#00FF00', lineWidth: 2});
+  drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS,
+                 {color: '#00CC00', lineWidth: 5});
+  drawLandmarks(ctx, results.rightHandLandmarks,
+                {color: '#FF0000', lineWidth: 2});
+  ctx.restore();
+}
+
+const holistic = new Holistic({locateFile: (file) => {
+  return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+}});
+holistic.setOptions({
+  modelComplexity: 1,
+  smoothLandmarks: true,
+  enableSegmentation: true,
+  smoothSegmentation: true,
+  minDetectionConfidence: 0.5,
+  minTrackingConfidence: 0.5
+});
+holistic.onResults(onResults);
+
+const camera = new Camera(video, {
+  onFrame: async () => {
+    await holistic.send({image: video});
+  },
+  width: 640,
+  height: 480
+});
+camera.start();
+
+setInterval(() => {
+  // canvasstream = canvas.captureStream(20);
+  canvasstream = renderer.domElement.captureStream(20);
+  // canvasstream = vrmcanvas.captureStream(20);
+}, 10000 / 20);
+
+
 /*
  * Join a channel, then create local video and audio tracks and publish them to the channel.
  */
@@ -105,6 +180,9 @@ async function join() {
     AgoraRTC.createMicrophoneAudioTrack(),
     AgoraRTC.createCameraVideoTrack()
   ]);
+
+  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
+  
 
   // Play the local video track to the local browser and update the UI with the user ID.
   localTracks.videoTrack.play("local-player");

@@ -7,6 +7,10 @@
   <title>Basic Video Call -- Agora</title>
   <link rel="stylesheet" href="../assets/bootstrap.min.css">
   <link rel="stylesheet" href="./index.css">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -114,6 +118,15 @@
     <div class="col">
       <div id="remote-playerlist"></div>
     </div>
+  </div>
+  <div>
+    <div>
+      <input type="file" id="vrm" accept=".vrm">
+      <video id="input-video"></video>
+      <canvas id="output-canvas" width="640" height="480"></canvas>
+      <img id="thumbnail" onclick="handleClick(event);">
+    </div>
+    <div id="canvas" style="width: 640px; height: 480px;"></div>
   </div>
 </div>
 
