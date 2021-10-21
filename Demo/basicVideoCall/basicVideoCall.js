@@ -1,4 +1,3 @@
-
 /*
  *  These procedures use Agora Video Call SDK for Web to enable local and remote
  *  users to join and leave a Video Call channel managed by Agora Platform.
@@ -17,7 +16,7 @@ var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
  */
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 
 /*
@@ -32,9 +31,8 @@ var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
-
 
 // get html element
 const video = document.getElementById("input-video");
@@ -42,8 +40,6 @@ const video = document.getElementById("input-video");
 const canvas = document.getElementById("output-canvas");
 const ctx = canvas.getContext("2d");
 // canvas.style.display = "none";
-
-
 
 /*
  * When this page is called with parameters in the URL, this procedure
@@ -62,7 +58,7 @@ $(() => {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 /*
  * When a user clicks Join or Leave in the HTML form, this procedure gathers the information
@@ -78,10 +74,13 @@ $("#join-form").submit(async function (e) {
     options.channel = $("#channel").val();
     options.uid = Number($("#uid").val());
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -89,100 +88,128 @@ $("#join-form").submit(async function (e) {
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 /*
  * Called when a user clicks Leave in order to exit a channel.
  */
 $("#leave").click(function (e) {
   leave();
-})
-
+});
 
 // holistic
 function onResults(results) {
   ctx.save();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(results.segmentationMask, 0, 0,
-                      canvas.width, canvas.height);
+  ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
 
   // Only overwrite existing pixels.
-  ctx.globalCompositeOperation = 'source-in';
-  ctx.fillStyle = '#00FF00';
+  ctx.globalCompositeOperation = "source-in";
+  ctx.fillStyle = "#00FF00";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Only overwrite missing pixels.
-  ctx.globalCompositeOperation = 'destination-atop';
-  ctx.drawImage(
-      results.image, 0, 0, canvas.width, canvas.height);
+  ctx.globalCompositeOperation = "destination-atop";
+  ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-  ctx.globalCompositeOperation = 'source-over';
-  drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS,
-                 {color: '#00FF00', lineWidth: 4});
-  drawLandmarks(ctx, results.poseLandmarks,
-                {color: '#FF0000', lineWidth: 2});
-  drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION,
-                 {color: '#C0C0C070', lineWidth: 1});
-  drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS,
-                 {color: '#CC0000', lineWidth: 5});
-  drawLandmarks(ctx, results.leftHandLandmarks,
-                {color: '#00FF00', lineWidth: 2});
-  drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS,
-                 {color: '#00CC00', lineWidth: 5});
-  drawLandmarks(ctx, results.rightHandLandmarks,
-                {color: '#FF0000', lineWidth: 2});
+  ctx.globalCompositeOperation = "source-over";
+  drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, {
+    color: "#00FF00",
+    lineWidth: 4,
+  });
+  drawLandmarks(ctx, results.poseLandmarks, { color: "#FF0000", lineWidth: 2 });
+  drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION, {
+    color: "#C0C0C070",
+    lineWidth: 1,
+  });
+  drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, {
+    color: "#CC0000",
+    lineWidth: 5,
+  });
+  drawLandmarks(ctx, results.leftHandLandmarks, {
+    color: "#00FF00",
+    lineWidth: 2,
+  });
+  drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS, {
+    color: "#00CC00",
+    lineWidth: 5,
+  });
+  drawLandmarks(ctx, results.rightHandLandmarks, {
+    color: "#FF0000",
+    lineWidth: 2,
+  });
   ctx.restore();
 }
 
-const holistic = new Holistic({locateFile: (file) => {
-  return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
-}});
+const holistic = new Holistic({
+  locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+  },
+});
 holistic.setOptions({
   modelComplexity: 1,
   smoothLandmarks: true,
   enableSegmentation: true,
   smoothSegmentation: true,
   minDetectionConfidence: 0.5,
-  minTrackingConfidence: 0.5
+  minTrackingConfidence: 0.5,
 });
 holistic.onResults(onResults);
 
 const camera = new Camera(video, {
   onFrame: async () => {
-    await holistic.send({image: video});
+    await holistic.send({ image: video });
   },
   width: 640,
-  height: 480
+  height: 480,
 });
 camera.start();
 
 setInterval(() => {
-  // canvasstream = canvas.captureStream(20);
-  canvasstream = renderer.domElement.captureStream(20);
-  // canvasstream = vrmcanvas.captureStream(20);
+  canvasstream = canvas.captureStream(20);
+  // canvasstream = renderer.domElement.captureStream(20);  // for vrm renderer
+  
 }, 10000 / 20);
-
 
 /*
  * Join a channel, then create local video and audio tracks and publish them to the channel.
  */
 async function join() {
-
   // Add an event listener to play remote tracks when remote user publishes.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
   // Join a channel and create local tracks. Best practice is to use Promise.all and run them concurrently.
-  [ options.uid, localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
-    // Join the channel.
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // Create tracks to the local microphone and camera.
-    AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack()
-  ]);
+  /*
+  [options.uid, localTracks.audioTrack, localTracks.videoTrack] =
+    await Promise.all([
+      // Join the channel.
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // Create tracks to the local microphone and camera.
+      AgoraRTC.createMicrophoneAudioTrack(),
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
+  */
 
-  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
-  
+  // create join a channel and video and audio track process
+  options.uid = await client.join(
+    options.appid,
+    options.channel,
+    options.token || null,
+    options.uid || null
+  );
+
+  const videoMediaStreamTrack = canvasstream.getVideoTracks()[0];
+
+  localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+  localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({
+    mediaStreamTrack: videoMediaStreamTrack
+  })
 
   // Play the local video track to the local browser and update the UI with the user ID.
   localTracks.videoTrack.play("local-player");
@@ -199,7 +226,7 @@ async function join() {
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -219,7 +246,6 @@ async function leave() {
   console.log("client leaves channel success");
 }
 
-
 /*
  * Add the local use to a remote channel.
  *
@@ -231,7 +257,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -241,7 +267,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }
