@@ -3,6 +3,15 @@
 // mediapipe holistic function
 
 function onResults(results) {
+
+    // check in order to check that we can get holistic results
+    if (results.rightHandLandmarks !== undefined){
+        rightHandLandmarks = results.rightHandLandmarks;
+    } else {
+        rightHandLandmarks = undefined;
+    }
+
+
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(results.segmentationMask, 0, 0,

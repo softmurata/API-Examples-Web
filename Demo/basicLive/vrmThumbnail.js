@@ -169,6 +169,9 @@ function onChangeHandler(e) {
         if (currentVrm){
 
             // some process
+
+            // print holistic results
+            console.log(rightHandLandmarks);
             
             currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = Math.PI / 3;
             currentVrm.update(deltaTime)

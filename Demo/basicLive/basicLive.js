@@ -16,7 +16,10 @@ var options = {
 };
 
 
-// get html element
+// ToDo: initialize variables for holistic results
+let rightHandLandmarks;
+
+// get html element(Initialization)
 const video = document.getElementById("input-video");
 video.style.display = "none";
 const canvas = document.getElementById("output-canvas");
@@ -25,10 +28,12 @@ canvas.style.display = "none";
 
 const vrmcanvas = document.getElementById("canvas");  // get div 
 
+
+
 // Three.js settings
 const scene = new THREE.Scene()
 
-// レンダラの作成、DOMに追加
+// generate camera
 const vrmcamera = new THREE.PerspectiveCamera(
     45,
     vrmcanvas.clientWidth / vrmcanvas.clientHeight,
@@ -38,14 +43,14 @@ const vrmcamera = new THREE.PerspectiveCamera(
 vrmcamera.position.set(0, 1, 3)
 
 // change
-// レンダラーの生成
+// generate renderer
 const renderer = new THREE.WebGLRenderer()
 renderer.setPixelRatio(window.devicePixelRatio)
 renderer.setSize(vrmcanvas.clientWidth, vrmcanvas.clientHeight)
 renderer.setClearColor(0x7fbfff, 1.0)
 vrmcanvas.appendChild(renderer.domElement)
 
-// ライトの生成
+// generate light and orbit controls
 const light = new THREE.DirectionalLight(0xffffff)
 light.position.set(-1, 1, -1).normalize()
 scene.add(light)
@@ -64,14 +69,18 @@ scene.add(axesHelper)
 const clock = new THREE.Clock()
 
 
+
+
+
 // mediapipe holistic process
 let canvasstream;
+const fps = 20;
 
 setInterval(() => {
-    canvasstream = canvas.captureStream(20);
-    // canvasstream = renderer.domElement.captureStream(20);
+    // canvasstream = canvas.captureStream(fps);  // for mediapipe
+    canvasstream = renderer.domElement.captureStream(20);
     
-}, 10000 / 20);
+}, 10000 / fps);
 
 
 
@@ -137,42 +146,11 @@ $("#leave").click(function (e) {
     leave();
 })
 
+//
+// set webcam.js
+//
 
-/*
 
-// for test
-// web camera
-navigator.mediaDevices.getUserMedia({video: true, audio: false})
-.then((mediaStream) => {
-    video.srcObject = mediaStream;
-    video.onloadedmetadata = (e) => {
-        video.play();
-    }
-
-})
-
-setInterval(() => {
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.moveTo(75, 50);
-    ctx.lineTo(100, 75);
-    ctx.lineTo(100, 25);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(75, 75, 50, 0, Math.PI * 2, true); // 外の円
-    ctx.moveTo(110, 75);
-    ctx.arc(75, 75, 35, 0, Math.PI, false);  // 口 (時計回り)
-    ctx.moveTo(65, 65);
-    ctx.arc(60, 65, 5, 0, Math.PI * 2, true);  // 左目
-    ctx.moveTo(95, 65);
-    ctx.arc(90, 65, 5, 0, Math.PI * 2, true);  // 右目
-    ctx.stroke();
-
-    canvasstream = canvas.captureStream(60);
-    
-}, 10000 / 60);
-*/
 
 async function join() {
     // create Agora client
