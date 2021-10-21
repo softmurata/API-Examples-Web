@@ -37,6 +37,7 @@ const vrmcamera = new THREE.PerspectiveCamera(
 )
 vrmcamera.position.set(0, 1, 3)
 
+// change
 // レンダラーの生成
 const renderer = new THREE.WebGLRenderer()
 renderer.setPixelRatio(window.devicePixelRatio)
