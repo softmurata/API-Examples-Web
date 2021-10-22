@@ -17,7 +17,44 @@ var options = {
 
 
 // ToDo: initialize variables for holistic results
+let isMouthOpen = false
+let isRighteyeOpen = false
+let isLefteyeOpen = false
+
+// head part
+let headQuat
+
+// right hand part
+let rightHandQuat
+let rightThumbIntermediateQuat
+let rightThumbProximalQuat
+let rightIndexIntermediateQuat
+let rightIndexProximalQuat
+let rightMiddleIntermediateQuat
+let rightMiddleProximalQuat
+let rightRingIntermediateQuat
+let rightRingProximalQuat
+let rightLittleIntermediateQuat
+let rightLittleProximalQuat
+
+// left hand part
+let leftHandQuat
+let leftThumbIntermediateQuat
+let leftThumbProximalQuat
+let leftIndexIntermediateQuat
+let leftIndexProximalQuat
+let leftMiddleIntermediateQuat
+let leftMiddleProximalQuat
+let leftRingIntermediateQuat
+let leftRingProximalQuat
+let leftLittleIntermediateQuat
+let leftLittleProximalQuat
+
+let isLeftHand = false
+let isRightHand = false
 let rightHandLandmarks;
+let leftHandLandmarks;
+
 
 // get html element(Initialization)
 const video = document.getElementById("input-video");

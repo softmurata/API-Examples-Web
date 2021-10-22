@@ -1,5 +1,7 @@
 // initialization canvas, ctx in basicLive.js
 
+
+
 // mediapipe holistic function
 
 function onResults(results) {
@@ -28,6 +30,61 @@ function onResults(results) {
         results.image, 0, 0, canvas.width, canvas.height);
   
     ctx.globalCompositeOperation = 'source-over';
+
+    if (results.leftHandLandmarks !== undefined) {
+        isLeftHand = true
+        leftHandLandmarks = results.leftHandLandmarks
+    } else {
+        isLeftHand = false
+        leftHandLandmarks = null
+    }
+  
+    if (results.rightHandLandmarks !== undefined) {
+        isRightHand = true
+        rightHandLandmarks = results.rightHandLandmarks
+    } else {
+        isRightHand = false
+        rightHandLandmarks = null
+    }
+
+    // face Rotation
+    if (results.faceLandmarks !== undefined) {
+        headQuat = faceRotation(results.faceLandmarks)
+
+        // candidate => (159, 145), (27, 23), (223, 230)
+        isRighteyeOpen = eyeRotation(
+          159,
+          145,
+          canvasCtx,
+          canvasElement,
+          results.faceLandmarks,
+          'righteyeUp',
+          'righteyeDown'
+        )
+
+        // candidate => (386, 374), (257, 253), (443, 450)
+        isLefteyeOpen = eyeRotation(
+          386,
+          374,
+          canvasCtx,
+          canvasElement,
+          results.faceLandmarks,
+          'lefteyeUp',
+          'lefteyeDown'
+        )
+
+        // candidate => (13, 14), (12, 15), (11, 16)
+        isMouthOpen = mouthRotation(
+          13,
+          14,
+          canvasCtx,
+          canvasElement,
+          results.faceLandmarks
+        )
+    }
+
+
+
     drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS,
                    {color: '#00FF00', lineWidth: 4});
     drawLandmarks(ctx, results.poseLandmarks,
