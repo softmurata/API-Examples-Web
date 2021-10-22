@@ -1,3 +1,4 @@
+
 // get vrm thumbnail
 const LE = true; // Binary GLTF is little endian.
 const MAGIC_glTF = 0x676c5446
@@ -99,7 +100,7 @@ function getThumbnail(jsonData, buffer, offset){
     return img;
 }
 
-function onLoadHandler(e){
+export function onLoadHandler(e){
     let raw = e.target.result;
     let ds = new DataView(raw);
 
@@ -126,74 +127,6 @@ function onLoadHandler(e){
     let img = getThumbnail(jsonData, ds.buffer, offset);
 
 }
-
-const vrmfileInput = document.getElementById("vrm");
-
-let filename;
-
-let currentVrm = undefined
-
-function onChangeHandler(e) {
-    if (!window.File) {
-        return;
-    }
-
-    let input = vrmfileInput.files[0];  // file
-
-    console.log("input:", input);
-
-    filename = input.name;
-
-    // create object url
-    let url = window.URL.createObjectURL(input);
-
-    // VRMのファイルをロード
-    // './Victoria_Rubin.vrm'
-    new THREE.GLTFLoader().load(url, (gltf) => {
-        THREE.VRM.from(gltf).then((vrm) => {
-        scene.add(vrm.scene)
-        currentVrm = vrm
-        vrm.humanoid.getBoneNode(
-            THREE.VRMSchema.HumanoidBoneName.Hips
-        ).rotation.y = Math.PI
-
-        // console.log( vrm );
-        })
-    })
-
-    function animate(){
-
-        requestAnimationFrame(animate)
-        const deltaTime = clock.getDelta()
-
-        if (currentVrm){
-
-            // some process
-
-            // print holistic results
-            console.log(rightHandLandmarks);
-            
-            currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = Math.PI / 3;
-            currentVrm.update(deltaTime)
-        }
-
-        renderer.render(scene, vrmcamera);
-
-    }
-
-    animate();
-
-    let reader = new FileReader();
-    reader.addEventListener("load", onLoadHandler, true);
-    reader.readAsArrayBuffer(input);
-}
-
-
-window.addEventListener("DOMContentLoaded", () => {
-    vrmfileInput.addEventListener("change", onChangeHandler, true);
-});
-
-
 
 
 

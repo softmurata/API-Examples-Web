@@ -1,5 +1,5 @@
 // helper function
-function faceRotation(faceLandmarks) {
+export function faceRotation(faceLandmarks) {
     let baseaxis1 = faceLandmarks[0]
     let baseaxis2 = faceLandmarks[1]
 
@@ -18,7 +18,7 @@ function faceRotation(faceLandmarks) {
     return quat
 }
 
-function eyeRotation(
+export function eyeRotation(
     upindex,
     downindex,
     ctx,
@@ -69,7 +69,7 @@ function eyeRotation(
     return flag
 }
 
-function mouthRotation(
+export function mouthRotation(
     upindex,
     downindex,
     ctx,
@@ -123,7 +123,7 @@ const rad2deg = (rad) => {
 }
 
 // helper function for updating vrm
-const updateJoint = (rootindex, middleindex, endindex, landmarks) => {
+export function updateJoint(rootindex, middleindex, endindex, landmarks){
     let min = -360
     let max = 360
 
@@ -142,7 +142,7 @@ const updateJoint = (rootindex, middleindex, endindex, landmarks) => {
     return quat
 }
 
-const updateHandJoint = (a1index, a2index, handlandmarks) => {
+export function updateHandJoint(a1index, a2index, handlandmarks){
     let axis1 = handlandmarks[a1index]
     let axis2 = handlandmarks[a2index]
 
