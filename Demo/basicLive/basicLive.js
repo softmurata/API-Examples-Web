@@ -120,7 +120,6 @@ canvas.style.display = "none";
 
 function onResults(results) {
 
-
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(results.segmentationMask, 0, 0,
@@ -209,7 +208,7 @@ function onResults(results) {
     ctx.restore();
 }
 
-export const holistic = new Holistic({locateFile: (file) => {
+const holistic = new Holistic({locateFile: (file) => {
     return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
 }});
 

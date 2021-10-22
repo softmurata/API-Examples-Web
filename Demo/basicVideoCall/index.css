@@ -28,9 +28,10 @@ input {
   margin-bottom: 2px;
 }
 
+
 .player {
-  width: 480px;
-  height: 320px;
+  width: 320px;
+  height: 240px;
 }
 
 .player-name {
