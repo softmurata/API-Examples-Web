@@ -58,8 +58,6 @@ export function eyeRotation(
         (normeyepointy1 - normeyepointy2) ** 2
     )
 
-    // console.log("righteye diff:", righteyediff);
-
     if (eyediff < eyediffThreshold) {
       flag = true
     } else {
@@ -102,10 +100,8 @@ export function mouthRotation(
       (normmouthpointx1 - normmouthpointx2) ** 2 +
         (normmouthpointy1 - normmouthpointy2) ** 2
     )
-    // console.log("current difference: ", diff);
 
     if (mouthdiff > mouthThreshold) {
-      // console.log("mouth is open: ", mouthdiff);
       flag = true
     } else {
       flag = false

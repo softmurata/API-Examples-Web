@@ -64,21 +64,26 @@ let rightHandLandmarks;
 let leftHandLandmarks;
 
 
-const vrmcanvas = document.getElementById("canvas");  // get div 
 
+const vrmcanvas = document.getElementById("canvas");  // get div 
 
 
 // Three.js settings
 const scene = new THREE.Scene()
 
-// generate camera
+
+// generate camera(ToDo: need setting up camera)
 const vrmcamera = new THREE.PerspectiveCamera(
     45,
     vrmcanvas.clientWidth / vrmcanvas.clientHeight,
     1,
     100
 )
+
 vrmcamera.position.set(0, 1, 3)
+
+
+
 
 // change
 // generate renderer
@@ -253,11 +258,12 @@ function onChangeHandler(e) {
         THREE.VRM.from(gltf).then((vrm) => {
         scene.add(vrm.scene)
         currentVrm = vrm
+        
         vrm.humanoid.getBoneNode(
             THREE.VRMSchema.HumanoidBoneName.Hips
         ).rotation.y = Math.PI
+        
 
-        // console.log( vrm );
         })
     })
 
@@ -383,14 +389,77 @@ function onChangeHandler(e) {
                 currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftLowerArm).rotation.z = (-Math.PI * 2.5) / 3;
                 currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftHand).rotation.x = -Math.PI / 2;
 
+                if (leftThumbIntermediateQuat){
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftThumbIntermediate).rotation.setFromQuaternion(leftThumbIntermediateQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftThumbProximal).rotation.setFromQuaternion(leftThumbProximalQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftIndexIntermediate).rotation.setFromQuaternion(leftIndexIntermediateQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftIndexProximal).rotation.setFromQuaternion(leftIndexProximalQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftMiddleIntermediate).rotation.setFromQuaternion(leftMiddleIntermediateQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftMiddleProximal).rotation.setFromQuaternion(leftMiddleProximalQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftRingIntermediate).rotation.setFromQuaternion(leftRingIntermediateQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftRingProximal).rotation.setFromQuaternion(leftRingProximalQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftLittleIntermediate).rotation.setFromQuaternion(leftLittleIntermediateQuat);
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftLittleProximal).rotation.setFromQuaternion(leftLittleProximalQuat);
+
+                } else {
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftThumbIntermediate).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftThumbProximal).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftIndexIntermediate).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftIndexProximal).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftMiddleIntermediate).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftMiddleProximal).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftRingIntermediate).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftRingProximal).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftLittleIntermediate).rotation.setFromQuaternion(new THREE.Quaternion());
+                    currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftLittleProximal).rotation.setFromQuaternion(new THREE.Quaternion());
+
+                }
+
+            }
+
+            // right hand rotation
+            if (rightHandQuat){
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.RightHand).rotation.setFromQuaternion(rightHandQuat);
+            } else {
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.RightHand).rotation.setFromQuaternion(new THREE.Quaternion());
+            }
+
+            // left hand rotation
+            if (leftHandQuat){
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftHand).rotation.setFromQuaternion(leftHandQuat);
+            } else {
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftHand).rotation.setFromQuaternion(new THREE.Quaternion());
+            }
+
+            // head rotation
+            if (headQuat){
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.Head).rotation.setFromQuaternion(headQuat);
+            } else {
+                currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.Head).rotation.setFromQuaternion(new THREE.Quaternion());
+            }
+
+            // mouth operation
+            if (isMouthOpen){
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.O, 1);
+            } else {
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.O, 0);
+            }
+
+            // right eye open
+            if (isRighteyeOpen) {
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.BlinkR, 1);
+            } else {
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.BlinkR, 0);
+            }
+
+            // left eye open
+            if (isLefteyeOpen) {
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.BlinkL, 1);
+            } else {
+                currentVrm.blendShapeProxy.setValue(THREE.VRMSchema.BlendShapePresetName.BlinkL, 0);
             }
 
 
-            // print holistic results
-            // console.log(rightHandLandmarks);
-
-            // for test
-            currentVrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = Math.PI / 3;
 
             // update current vrm model
             currentVrm.update(deltaTime)
@@ -514,6 +583,7 @@ async function join() {
         localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
 
         // create custom role
+        console.log("mediastream track:", canvasstream.getVideoTracks());
         const videoMediaStreamTrack = canvasstream.getVideoTracks()[0];
 
         localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({
