@@ -569,7 +569,8 @@ async function join() {
     options.appid,
     options.channel,
     options.token || null,
-    options.uid || null
+    options.uid || null,
+    options.name || null,
   );
 
   const videoMediaStreamTrack = canvasstream.getVideoTracks()[0];
@@ -591,7 +592,8 @@ async function join() {
  * Stop all local and remote tracks then leave the channel.
  */
 async function leave() {
-  for (trackName in localTracks) {
+  for (var trackName in localTracks) {
+    console.log(trackName);
     var track = localTracks[trackName];
     if (track) {
       track.stop();
@@ -607,7 +609,7 @@ async function leave() {
   // leave the channel
   await client.leave();
 
-  $("#local-player-name").text("");
+  // $("#local-player-name").text("");
   $("#join").attr("disabled", false);
   $("#leave").attr("disabled", true);
   console.log("client leaves channel success");
