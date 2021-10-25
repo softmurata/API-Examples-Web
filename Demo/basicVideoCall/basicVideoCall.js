@@ -97,10 +97,10 @@ const scene = new THREE.Scene()
 
 // generate camera(ToDo: need setting up camera)
 const vrmcamera = new THREE.PerspectiveCamera(
-    45,
+    30,
     vrmcanvas.clientWidth / vrmcanvas.clientHeight,
     1,
-    100
+    10
 )
 
 vrmcamera.position.set(0, 1, 3)
