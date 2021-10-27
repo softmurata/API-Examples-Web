@@ -99,4 +99,6 @@ The sample projects are under the MIT license. See the [LICENSE](./LICENSE) file
 
 ## My Deploy Environment
 https://api-examples-web.vercel.app/
-
+appid:f798396aae774cc992bcda338e8a6acf
+room: test
+token: 006f798396aae774cc992bcda338e8a6acfIABPAQDCHkli/FUpJlRkzAajT6jXrNCVY+e3KzbM9jAdbwx+f9gAAAAAIgDEGoyZti56YQQAAQC2LnphAgC2LnphAwC2LnphBAC2Lnph
