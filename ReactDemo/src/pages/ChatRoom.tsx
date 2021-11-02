@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
-import queryString from 'query-string';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import useAgora from '../hooks/useAgora';
 import MediaPlayer from "../components/MediaPlayer";
@@ -12,15 +11,14 @@ function ChatRoom(props: any) {
 
     let history = useHistory()
 
-    const { roomId } = useParams<{roomId?: string}>();
-    const value = queryString.parse(props.location.search);
+    const { roomId, channel, username } = useParams<{roomId?: string, channel?:string, username?:string}>();
 
     const {
         localAudioTrack, localVideoTrack, leave, join, joinState, remoteUsers
     } = useAgora(client);
 
     useEffect(() => {
-        join(roomId, value.channel, undefined)
+        join(roomId, channel, undefined)
     }, [])
 
     return (
@@ -28,10 +26,8 @@ function ChatRoom(props: any) {
             ChatRoom
 
             <div>RoomID: { roomId }</div>
-            <div>Channel: { value.channel }</div>
-            <div>Username: { value.username }</div>
-
-
+            <div>Channel: { channel }</div>
+            <div>Username: { username }</div>
             {/* Navbar.tsx */}
 
             {/* MediaPlayer.tsx */}

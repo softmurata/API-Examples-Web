@@ -10,7 +10,7 @@ function App() {
         <BrowserRouter>
             <Switch>
                 <Route exact path="/" component={HomePage} />
-                <Route exact path="/chatroom/:roomId" component={ChatRoom}/>
+                <Route exact path="/chatroom/:roomId/:channel/:username" component={ChatRoom}/>
                 <Route exact path="/preview" component={Preview}/>
             </Switch>
         </BrowserRouter>

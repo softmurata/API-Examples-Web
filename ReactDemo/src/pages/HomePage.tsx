@@ -10,7 +10,7 @@ function HomePage() {
 
     const onSubmit = (e: any) => {
         e.preventDefault()
-        history.push(`/chatroom/${roomId}?channel=${channel}&username=${username}`)
+        history.push(`/chatroom/${roomId}/${channel}/${username}`)
     }
 
     return (
