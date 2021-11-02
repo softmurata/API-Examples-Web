@@ -1,11 +1,12 @@
 import React from 'react'
-import Chat from '../components/Call'
+import Chat from '../components/Call';
+import Form from "../components/Form";
 
-function HomePage() {
+function HomePage(props: any) {
     return (
         <div>
             {/* Navbar.tsx */}
-            <Chat />
+            <Form history={props.history}/>
         </div>
     )
 }
