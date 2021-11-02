@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function HomePage() {
     let history = useHistory()
@@ -15,6 +16,7 @@ function HomePage() {
 
     return (
         <div>
+            <Navbar />
             <form className='call-form' onSubmit={onSubmit}>
                 <label>
                 AppID:
