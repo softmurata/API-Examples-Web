@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
-import useAgora from './hooks/useAgora';
-import MediaPlayer from './components/MediaPlayer';
-import './Call.css';
+import useAgora from '../hooks/useAgora';
+import MediaPlayer from './MediaPlayer';
+import '../Call.css';
 
 const client = AgoraRTC.createClient({ codec: 'h264', mode: 'rtc' });
 

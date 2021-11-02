@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Call from "./Call";
 import App from "./App";
 
 ReactDOM.render(

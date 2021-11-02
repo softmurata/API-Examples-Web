@@ -1,11 +1,11 @@
 import React from 'react'
+import Chat from '../components/Call'
 
 function HomePage() {
     return (
         <div>
             {/* Navbar.tsx */}
-            {/* Form.tsx */}
-            HomePage
+            <Chat />
         </div>
     )
 }
