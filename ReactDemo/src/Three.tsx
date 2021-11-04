@@ -4,13 +4,17 @@ import styled from 'styled-components';
 import Controls from './Controls'
 import SampleModel from './components/SampleModel'
 
-export default function Three() {
+interface Props {
+  url: string
+}
+
+export default function Three({ url }: Props) {
   return (
     <Container>
       <Canvas>
         <directionalLight position={[1,1,1]} />
         <Controls />
-        <SampleModel />
+        <SampleModel url={url}/>
         <gridHelper /> {/* わかりやすいようにGridPanelを表示 */}
       </Canvas>
     </Container>

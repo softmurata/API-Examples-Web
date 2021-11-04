@@ -5,7 +5,7 @@ import HomePage from "./pages/HomePage";
 import ChatRoom from "./pages/ChatRoom";
 import Preview from "./pages/Preview";
 
-import Three from "./Three"
+// import Three from "./Three"
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
           <Route exact path="/preview" component={Preview} />
         </Switch>
       </BrowserRouter>
-      <Three />
+      {/*<Three />*/}
     </>
   );
 }

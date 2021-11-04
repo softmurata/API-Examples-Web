@@ -1,18 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Button } from "@mui/material"
-import { FormGroup, FormControl, Input, InputLabel, FormHelperText } from "@mui/material"
+import { FormGroup, FormControl, Input, InputLabel, FormHelperText, Box, Paper, Typography } from "@mui/material";
+import { useDropzone } from "react-dropzone";
+
 
 function HomePage() {
-  let history = useHistory();
+    
+    let history = useHistory();
   const [roomId, setRoomId] = useState("");
   const [channel, setChannel] = useState("");
   const [username, setUsername] = useState("");
+  
+  const [ files, setFiles ] = useState<File[]>([]);
+
+    const accept = ".vrm"; //"image/jpeg, image/png";
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+
+      setFiles(acceptedFiles)
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept,
+    onDrop,
+  });
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
+
+  const handleChange = (e: any) => {
+      console.log(e.target);
+      setFiles(e.target.files);
+  }
+
 
   const onSubmit = (e: any) => {
     e.preventDefault();
-    history.push(`/chatroom/${roomId}/${channel}/${username}`);
+
+    // original code for  transfer chatroom page
+    // history.push(`/chatroom/${roomId}/${channel}/${username}`);
+
+
+    // new code
+    let url = URL.createObjectURL(files[0])
+    
+    history.replace({
+        pathname: `/chatroom/${roomId}/${channel}/${username}`,
+        state: {
+            value: url,
+        }
+    })
+    
   };
 
   return (
@@ -31,6 +70,28 @@ function HomePage() {
             <InputLabel htmlFor="username">Username</InputLabel>
             <Input id="username" type="text" name="username" onChange={(event) => setUsername(event.target.value)}/>
         </FormControl>
+        <Box width={180} height={180}>
+        <Paper
+        variant="outlined"
+        square
+        {...getRootProps()}
+        style={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          padding: 10,
+        }}
+      >
+          <input  {...getInputProps()}/>
+          {isDragActive ? (
+          <Typography>Drop the files here ...</Typography>
+        ) : (
+          <Typography>
+            Drag 'n' drop some files here, or click to select files
+          </Typography>
+        )}
+      </Paper>
+        </Box>
         {/* cannot adjust best button */}
         <Button onClick={onSubmit} color="primary" size="small" variant="contained" fullWidth={false}>Submit</Button>
       </FormGroup>

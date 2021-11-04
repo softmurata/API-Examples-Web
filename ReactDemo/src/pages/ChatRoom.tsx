@@ -4,6 +4,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import useAgora from "../hooks/useAgora";
 import MediaPlayer from "../components/MediaPlayer";
 import { useHistory } from "react-router-dom";
+import Three from "../Three";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
@@ -32,6 +33,11 @@ function ChatRoom(props: any) {
       <div>RoomID: {roomId}</div>
       <div>Channel: {channel}</div>
       <div>Username: {username}</div>
+      <div>
+        {/*File: {props.location.state.value}*/}
+        {/*<img src={props.location.state.value}/>*/}
+        <Three url={props.location.state.value}/>
+      </div>
       {/* Navbar.tsx */}
       {/* MediaPlayer.tsx */}
       <div className="player-container">
