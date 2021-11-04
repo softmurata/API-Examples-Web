@@ -9,7 +9,6 @@
   margin: 0;
 }
 
-
 #join-form {
   margin-top: 10px;
 }
@@ -43,12 +42,13 @@ input {
   height: 180px;
 }
 
-#success-alert, #success-alert-with-token {
+#success-alert,
+#success-alert-with-token {
   display: none;
 }
 
 #device-wrapper {
-  margin-top:12px;
+  margin-top: 12px;
   display: none;
   justify-content: space-between;
 }
@@ -58,7 +58,7 @@ input {
 }
 
 .progress-bar {
-  transition-duration: .3s;
+  transition-duration: 0.3s;
 }
 
 #device-wrapper .input-group {

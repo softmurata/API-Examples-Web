@@ -2,17 +2,17 @@
 var client = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 var remoteUsers = {};
 // Agora client options
-var options = { 
+var options = {
   appid: null,
   channel: null,
   uid: null,
   token: null,
   liveStreamingUrl: null,
-  role: "host" // host or audience
+  role: "host", // host or audience
 };
 
 // the demo can auto join channel with params in url
@@ -31,32 +31,31 @@ $(() => {
     $("#live-streaming-url").val(options.liveStreamingUrl);
     $("#join-form").submit();
   }
-  $("#live-streaming-stop").click(function(event){
-    event.preventDefault()
+  $("#live-streaming-stop").click(function (event) {
+    event.preventDefault();
     // Stop the push according to the cdn address.
     // Note that this is an asynchronous method, please ensure that the asynchronous operation is completed before proceeding to the next step.
     client.stopLiveStreaming(options.liveStreamingUrl).then(() => {
       console.log("stop live streaming success");
-      $("#live-streaming-stop").attr("disabled", true)
-      $("#live-streaming-start").attr("disabled", false)
-    })
-  })
+      $("#live-streaming-stop").attr("disabled", true);
+      $("#live-streaming-start").attr("disabled", false);
+    });
+  });
 
-  $("#live-streaming-start").click(async function(event){
-    event.preventDefault()
+  $("#live-streaming-start").click(async function (event) {
+    event.preventDefault();
     // We recommend that only one host has the authority to control the push in a live.
     // Please set your own permission control.
 
     // When the live broadcast is in progress, the authorized host starts the push stream by clicking button
-    options.liveStreamingUrl &&  await liveTranscoding()
-  })
-
-})
+    options.liveStreamingUrl && (await liveTranscoding());
+  });
+});
 
 $("#host-join").click(function (e) {
   // In this demo, the user role is host by default
-  options.role = "host"
-})
+  options.role = "host";
+});
 
 $("#join-form").submit(async function (e) {
   e.preventDefault();
@@ -69,11 +68,17 @@ $("#join-form").submit(async function (e) {
     options.liveStreamingUrl = $("#live-streaming-url").val();
     await join();
     if (options.role === "host") {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}&liveStreamingUrl=${options.liveStreamingUrl}`);
-      if(options.token) {
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}&liveStreamingUrl=${options.liveStreamingUrl}`
+      );
+      if (options.token) {
         $("#success-alert-with-token").css("display", "block");
       } else {
-        $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}&liveStreamingUrl=${options.liveStreamingUrl}`);
+        $("#success-alert a").attr(
+          "href",
+          `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}&liveStreamingUrl=${options.liveStreamingUrl}`
+        );
         $("#success-alert").css("display", "block");
       }
     }
@@ -82,11 +87,11 @@ $("#join-form").submit(async function (e) {
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 $("#leave").click(function (e) {
   leave();
-})
+});
 
 async function join() {
   // create Agora client
@@ -97,7 +102,12 @@ async function join() {
   client.on("user-unpublished", handleUserUnpublished);
 
   // join the channel
-  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
+  options.uid = await client.join(
+    options.appid,
+    options.channel,
+    options.token || null,
+    options.uid || null
+  );
 
   if (options.role === "host") {
     // create local audio and video tracks
@@ -109,33 +119,35 @@ async function join() {
     // publish local tracks to channel
     await client.publish(Object.values(localTracks));
     console.log("publish success");
-    $("#live-streaming-start").attr("disabled", false)
+    $("#live-streaming-start").attr("disabled", false);
   }
 }
 
-async function liveTranscoding(){
-  if(!options.liveStreamingUrl){
-    console.error('you should input liveStreaming URL');
-    return
+async function liveTranscoding() {
+  if (!options.liveStreamingUrl) {
+    console.error("you should input liveStreaming URL");
+    return;
   }
   // Set the order of local and remote hosts according to your preferences
-  const transcodingUsers = [options.uid, ...Object.keys(remoteUsers)].map((uid, index)=>{
-    // Set the size according to your idea
-    const width = 600
-    const height = 700
-    return {
-      // Set the location coordinates according to your ideas
-      x: 30 * (index % 2) + index * width + 10,
-      y: 10,
-      width,
-      height,
-      zOrder: 0,
-      alpha: 1.0,
-      // The uid below should be consistent with the uid entered in AgoraRTCClient.join
-      // uid must be an integer number
-      uid: Number(uid),
+  const transcodingUsers = [options.uid, ...Object.keys(remoteUsers)].map(
+    (uid, index) => {
+      // Set the size according to your idea
+      const width = 600;
+      const height = 700;
+      return {
+        // Set the location coordinates according to your ideas
+        x: 30 * (index % 2) + index * width + 10,
+        y: 10,
+        width,
+        height,
+        zOrder: 0,
+        alpha: 1.0,
+        // The uid below should be consistent with the uid entered in AgoraRTCClient.join
+        // uid must be an integer number
+        uid: Number(uid),
+      };
     }
-  })
+  );
 
   //  configuration of pushing stream to cdn
   const liveTranscodingConfig = {
@@ -150,48 +162,45 @@ async function liveTranscoding(){
     videoCodecProfile: 100,
     userCount: 1,
     // userConfigExtraInfo: {},
-    backgroundColor: 0x0000EE,
+    backgroundColor: 0x0000ee,
     watermark: {
-            url: "https://agoraio-community.github.io/AgoraWebSDK-NG/img/logo.png",
-            x: 20,
-            y: 20,
-            width: 200,
-            height: 200,
+      url: "https://agoraio-community.github.io/AgoraWebSDK-NG/img/logo.png",
+      x: 20,
+      y: 20,
+      width: 200,
+      height: 200,
     },
     backgroundImage: {
-            url: "https://agoraio-community.github.io/AgoraWebSDK-NG/img/sd_rtn.jpg",
-            x: 100,
-            y: 100,
-            width: 1080,
-            height: 520,
+      url: "https://agoraio-community.github.io/AgoraWebSDK-NG/img/sd_rtn.jpg",
+      x: 100,
+      y: 100,
+      width: 1080,
+      height: 520,
     },
-    transcodingUsers
-  }
+    transcodingUsers,
+  };
 
   try {
-
     // To monitor errors in the middle of the push, please refer to the API documentation for the list of error codes
     client.on("live-streaming-error", (url, err) => {
       console.error("url", url, "live streaming error!", err.code);
     });
     // set live streaming transcode configuration,
-    await client.setLiveTranscoding(liveTranscodingConfig)
+    await client.setLiveTranscoding(liveTranscodingConfig);
     // then start live streaming.
-    await client.startLiveStreaming(options.liveStreamingUrl, true)
-  
-    $("#live-streaming-stop").attr("disabled", false)
-    $("#live-streaming-start").attr("disabled", true)
-    
-  } catch (error) {
-    console.error('live streaming error:', error.message)
-  }
+    await client.startLiveStreaming(options.liveStreamingUrl, true);
 
+    $("#live-streaming-stop").attr("disabled", false);
+    $("#live-streaming-start").attr("disabled", true);
+  } catch (error) {
+    console.error("live streaming error:", error.message);
+  }
 }
 
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -208,8 +217,8 @@ async function leave() {
   $("#local-player-name").text("");
   $("#host-join").attr("disabled", false);
   $("#leave").attr("disabled", true);
-  $("#live-streaming-stop").attr("disabled", true)
-  $("#live-streaming-start").attr("disabled", true)
+  $("#live-streaming-stop").attr("disabled", true);
+  $("#live-streaming-start").attr("disabled", true);
 
   console.log("client leaves channel success");
 }
@@ -219,7 +228,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -229,7 +238,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }

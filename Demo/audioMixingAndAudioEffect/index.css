@@ -9,7 +9,6 @@
   margin: 0;
 }
 
-
 #join-form {
   margin-top: 10px;
 }
@@ -38,7 +37,8 @@
   margin: 8px 0;
 }
 
-#success-alert, #success-alert-with-token {
+#success-alert,
+#success-alert-with-token {
   display: none;
 }
 

@@ -1,4 +1,3 @@
-
 /*
  *  These procedures use Agora Video Call SDK for Web to enable local and remote
  *  users to join and leave a Video Call channel managed by Agora Platform.
@@ -17,7 +16,7 @@ var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
  */
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 
 /*
@@ -32,7 +31,7 @@ var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 var areas = [
@@ -42,8 +41,8 @@ var areas = [
   { label: "EUROPE", detail: "Europe", value: "EUROPE" },
   { label: "INDIA", detail: "India", value: "INDIA" },
   { label: "JAPAN", detail: "Japan", value: "JAPAN" },
-  { label: "NORTH_AMERICA", detail: "North America", value: "NORTH_AMERICA" }
-]
+  { label: "NORTH_AMERICA", detail: "North America", value: "NORTH_AMERICA" },
+];
 
 var area;
 
@@ -53,7 +52,7 @@ var area;
  */
 $(() => {
   initAreas();
-  $(".profile-list").delegate("a", "click", function(e){
+  $(".profile-list").delegate("a", "click", function (e) {
     changeArea(this.getAttribute("label"));
   });
   var urlParams = new URL(location.href).searchParams;
@@ -68,7 +67,7 @@ $(() => {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 /*
  * When a user clicks Join or Leave in the HTML form, this procedure gathers the information
@@ -84,10 +83,13 @@ $("#join-form").submit(async function (e) {
     options.channel = $("#channel").val();
     options.uid = Number($("#uid").val());
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -95,32 +97,37 @@ $("#join-form").submit(async function (e) {
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 /*
  * Called when a user clicks Leave in order to exit a channel.
  */
 $("#leave").click(function (e) {
   leave();
-})
+});
 
 /*
  * Join a channel, then create local video and audio tracks and publish them to the channel.
  */
 async function join() {
-
   // Add an event listener to play remote tracks when remote user publishes.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
   // Join a channel and create local tracks. Best practice is to use Promise.all and run them concurrently.
-  [ options.uid, localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
-    // Join the channel.
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // Create tracks to the local microphone and camera.
-    AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack()
-  ]);
+  [options.uid, localTracks.audioTrack, localTracks.videoTrack] =
+    await Promise.all([
+      // Join the channel.
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // Create tracks to the local microphone and camera.
+      AgoraRTC.createMicrophoneAudioTrack(),
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
 
   // Play the local video track to the local browser and update the UI with the user ID.
   localTracks.videoTrack.play("local-player");
@@ -137,7 +144,7 @@ async function join() {
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -157,7 +164,6 @@ async function leave() {
   console.log("client leaves channel success");
 }
 
-
 /*
  * Add the local use to a remote channel.
  *
@@ -169,7 +175,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -179,7 +185,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }
@@ -207,18 +213,20 @@ function handleUserUnpublished(user) {
   $(`#player-wrapper-${id}`).remove();
 }
 
-async function changeArea (label) {
-  area = areas.find(profile => profile.label === label);
+async function changeArea(label) {
+  area = areas.find((profile) => profile.label === label);
   $(".profile-input").val(`${area.detail}`);
   // Specify the region for connection as North America
   AgoraRTC.setArea({
-    areaCode:area.value
-  })
+    areaCode: area.value,
+  });
 }
 
-function initAreas () {
-  areas.forEach(profile => {
-    $(".profile-list").append(`<a class="dropdown-item" label="${profile.label}" href="#">${profile.label}: ${profile.detail}</a>`)
+function initAreas() {
+  areas.forEach((profile) => {
+    $(".profile-list").append(
+      `<a class="dropdown-item" label="${profile.label}" href="#">${profile.label}: ${profile.detail}</a>`
+    );
   });
   area = areas[0];
   $(".profile-input").val(`${area.detail}`);

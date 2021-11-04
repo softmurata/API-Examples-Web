@@ -2,7 +2,7 @@
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 var remoteUsers = {};
 // Agora client options
@@ -10,7 +10,7 @@ var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 var mics = []; // all microphones devices you can use
@@ -23,10 +23,10 @@ let volumeAnimation;
 // the demo can auto join channel with params in url
 $(async () => {
   $("#media-device-test").modal("show");
-  $(".cam-list").delegate("a", "click", function(e){
+  $(".cam-list").delegate("a", "click", function (e) {
     switchCamera(this.text);
   });
-  $(".mic-list").delegate("a", "click", function(e){
+  $(".mic-list").delegate("a", "click", function (e) {
     switchMicrophone(this.text);
   });
 
@@ -37,7 +37,7 @@ $(async () => {
   options.uid = urlParams.get("uid");
   await mediaDeviceTest();
   volumeAnimation = requestAnimationFrame(setVolumeWave);
-})
+});
 
 $("#join-form").submit(async function (e) {
   e.preventDefault();
@@ -49,10 +49,13 @@ $("#join-form").submit(async function (e) {
     options.channel = $("#channel").val();
     options.uid = Number($("#uid").val());
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -60,11 +63,11 @@ $("#join-form").submit(async function (e) {
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 $("#leave").click(function (e) {
   leave();
-})
+});
 
 $("#media-device-test").on("hidden.bs.modal", function (e) {
   cancelAnimationFrame(volumeAnimation);
@@ -74,21 +77,28 @@ $("#media-device-test").on("hidden.bs.modal", function (e) {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 async function join() {
   // add event listener to play remote tracks when remote user publishs.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
-  
+
   // join a channel.
-  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
+  options.uid = await client.join(
+    options.appid,
+    options.channel,
+    options.token || null,
+    options.uid || null
+  );
 
   if (!localTracks.audioTrack || !localTracks.videoTrack) {
-    [ localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
+    [localTracks.audioTrack, localTracks.videoTrack] = await Promise.all([
       // create local tracks, using microphone and camera
-      AgoraRTC.createMicrophoneAudioTrack({ microphoneId: currentMic.deviceId }),
-      AgoraRTC.createCameraVideoTrack({ cameraId: currentCam.deviceId })
+      AgoraRTC.createMicrophoneAudioTrack({
+        microphoneId: currentMic.deviceId,
+      }),
+      AgoraRTC.createCameraVideoTrack({ cameraId: currentCam.deviceId }),
     ]);
   }
 
@@ -103,10 +113,10 @@ async function join() {
 
 async function mediaDeviceTest() {
   // create local tracks
-  [ localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
+  [localTracks.audioTrack, localTracks.videoTrack] = await Promise.all([
     // create local tracks, using microphone and camera
     AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack()
+    AgoraRTC.createCameraVideoTrack(),
   ]);
 
   // play local track on device detect dialog
@@ -117,7 +127,7 @@ async function mediaDeviceTest() {
   mics = await AgoraRTC.getMicrophones();
   currentMic = mics[0];
   $(".mic-input").val(currentMic.label);
-  mics.forEach(mic => {
+  mics.forEach((mic) => {
     $(".mic-list").append(`<a class="dropdown-item" href="#">${mic.label}</a>`);
   });
 
@@ -125,16 +135,15 @@ async function mediaDeviceTest() {
   cams = await AgoraRTC.getCameras();
   currentCam = cams[0];
   $(".cam-input").val(currentCam.label);
-  cams.forEach(cam => {
+  cams.forEach((cam) => {
     $(".cam-list").append(`<a class="dropdown-item" href="#">${cam.label}</a>`);
   });
 }
 
-
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -162,7 +171,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -172,7 +181,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }
@@ -190,22 +199,28 @@ function handleUserUnpublished(user) {
 }
 
 async function switchCamera(label) {
-  currentCam = cams.find(cam => cam.label === label);
+  currentCam = cams.find((cam) => cam.label === label);
   $(".cam-input").val(currentCam.label);
   // switch device of local video track.
   await localTracks.videoTrack.setDevice(currentCam.deviceId);
 }
 
 async function switchMicrophone(label) {
-  currentMic = mics.find(mic => mic.label === label);
+  currentMic = mics.find((mic) => mic.label === label);
   $(".mic-input").val(currentMic.label);
   // switch device of local audio track.
   await localTracks.audioTrack.setDevice(currentMic.deviceId);
 }
 
-// show real-time volume while adjusting device. 
+// show real-time volume while adjusting device.
 function setVolumeWave() {
   volumeAnimation = requestAnimationFrame(setVolumeWave);
-  $(".progress-bar").css("width", localTracks.audioTrack.getVolumeLevel() * 100 + "%")
-  $(".progress-bar").attr("aria-valuenow", localTracks.audioTrack.getVolumeLevel() * 100)
+  $(".progress-bar").css(
+    "width",
+    localTracks.audioTrack.getVolumeLevel() * 100 + "%"
+  );
+  $(".progress-bar").attr(
+    "aria-valuenow",
+    localTracks.audioTrack.getVolumeLevel() * 100
+  );
 }

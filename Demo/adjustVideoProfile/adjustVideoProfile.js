@@ -2,15 +2,15 @@
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 var remoteUsers = {};
 // Agora client options
-var options = { 
+var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 // you can find all the agora preset video profiles here https://docs.agora.io/en/Voice/API%20Reference/web_ng/globals.html#videoencoderconfigurationpreset
@@ -21,15 +21,19 @@ var videoProfiles = [
   { label: "720p_2", detail: "1280×720, 30fps, 2000Kbps", value: "720p_2" },
   { label: "1080p_1", detail: "1920×1080, 15fps, 2080Kbps", value: "1080p_1" },
   { label: "1080p_2", detail: "1920×1080, 30fps, 3000Kbps", value: "1080p_2" },
-  { label: "200×640", detail: "200×640, 30fps", value: { width: 200, height: 640, frameRate: 30 } } // custom video profile
-]
+  {
+    label: "200×640",
+    detail: "200×640, 30fps",
+    value: { width: 200, height: 640, frameRate: 30 },
+  }, // custom video profile
+];
 
 var curVideoProfile;
 
 // the demo can auto join channel with params in url
 $(() => {
   initVideoProfiles();
-  $(".profile-list").delegate("a", "click", function(e){
+  $(".profile-list").delegate("a", "click", function (e) {
     changeVideoProfile(this.getAttribute("label"));
   });
 
@@ -45,7 +49,7 @@ $(() => {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 $("#join-form").submit(async function (e) {
   e.preventDefault();
@@ -56,10 +60,13 @@ $("#join-form").submit(async function (e) {
     options.channel = $("#channel").val();
     options.uid = Number($("#uid").val());
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -67,25 +74,31 @@ $("#join-form").submit(async function (e) {
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 $("#leave").click(function (e) {
   leave();
-})
+});
 
-async function join () {
+async function join() {
   // add event listener to play remote tracks when remote user publishs.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
   // join a channel and create local tracks, we can use Promise.all to run them concurrently
-  [ options.uid, localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
-    // join the channel
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // create local tracks, using microphone and camera
-    AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack({ encoderConfig: curVideoProfile.value })
-  ]);
+  [options.uid, localTracks.audioTrack, localTracks.videoTrack] =
+    await Promise.all([
+      // join the channel
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // create local tracks, using microphone and camera
+      AgoraRTC.createMicrophoneAudioTrack(),
+      AgoraRTC.createCameraVideoTrack({ encoderConfig: curVideoProfile.value }),
+    ]);
 
   // play local video track
   localTracks.videoTrack.play("local-player");
@@ -99,7 +112,7 @@ async function join () {
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -124,7 +137,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -134,24 +147,29 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }
 
-function initVideoProfiles () {
-  videoProfiles.forEach(profile => {
-    $(".profile-list").append(`<a class="dropdown-item" label="${profile.label}" href="#">${profile.label}: ${profile.detail}</a>`)
+function initVideoProfiles() {
+  videoProfiles.forEach((profile) => {
+    $(".profile-list").append(
+      `<a class="dropdown-item" label="${profile.label}" href="#">${profile.label}: ${profile.detail}</a>`
+    );
   });
   curVideoProfile = videoProfiles[0];
   $(".profile-input").val(`${curVideoProfile.detail}`);
 }
 
-async function changeVideoProfile (label) {
-  curVideoProfile = videoProfiles.find(profile => profile.label === label);
+async function changeVideoProfile(label) {
+  curVideoProfile = videoProfiles.find((profile) => profile.label === label);
   $(".profile-input").val(`${curVideoProfile.detail}`);
   // change the local video track`s encoder configuration
-  localTracks.videoTrack && await localTracks.videoTrack.setEncoderConfiguration(curVideoProfile.value);
+  localTracks.videoTrack &&
+    (await localTracks.videoTrack.setEncoderConfiguration(
+      curVideoProfile.value
+    ));
 }
 
 function handleUserPublished(user, mediaType) {

@@ -4,20 +4,20 @@ var localTracks = {
   videoTrack: null,
   audioTrack: null,
   audioMixingTrack: null,
-  audioEffectTrack: null
+  audioEffectTrack: null,
 };
 var remoteUsers = {};
 // Agora client options
-var options = { 
+var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 var audioMixing = {
   state: "IDLE", // "IDLE" | "LOADING | "PLAYING" | "PAUSE"
-  duration: 0
-}
+  duration: 0,
+};
 
 const playButton = $(".play");
 let audioMixingProgressAnimation;
@@ -36,7 +36,7 @@ $(() => {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 $("#join-form").submit(async function (e) {
   e.preventDefault();
@@ -47,10 +47,13 @@ $("#join-form").submit(async function (e) {
     options.channel = $("#channel").val();
     options.uid = Number($("#uid").val());
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -62,31 +65,31 @@ $("#join-form").submit(async function (e) {
     $("#stop-audio-mixing").attr("disabled", false);
     $("#local-audio-mixing").attr("disabled", false);
   }
-})
+});
 
 $("#leave").click(async function (e) {
   leave();
-})
+});
 
 $("#audio-mixing").click(function (e) {
   startAudioMixing();
-})
+});
 
 $("#audio-effect").click(async function (e) {
   // play the audio effect
   await playEffect(1, { source: "audio.mp3" });
   console.log("play audio effect success");
-})
+});
 
 $("#stop-audio-mixing").click(function (e) {
   stopAudioMixing();
   return false;
-})
+});
 
 $(".progress").click(function (e) {
   setAudioMixingPosition(e.offsetX);
   return false;
-})
+});
 
 $("#local-audio-mixing").click(function (e) {
   // get selected file
@@ -97,12 +100,12 @@ $("#local-audio-mixing").click(function (e) {
   }
   startAudioMixing(file);
   return false;
-})
+});
 
-playButton.click(function() {
+playButton.click(function () {
   if (audioMixing.state === "IDLE" || audioMixing.state === "LOADING") return;
-    toggleAudioMixing();
-    return false;
+  toggleAudioMixing();
+  return false;
 });
 
 function setAudioMixingPosition(clickPosX) {
@@ -110,11 +113,14 @@ function setAudioMixingPosition(clickPosX) {
   const newPosition = clickPosX / $(".progress").width();
 
   // set the audio mixing playing position
-  localTracks.audioMixingTrack.seekAudioBuffer(newPosition * audioMixing.duration);
+  localTracks.audioMixingTrack.seekAudioBuffer(
+    newPosition * audioMixing.duration
+  );
 }
 
 async function startAudioMixing(file) {
-  if(audioMixing.state === "PLAYING" || audioMixing.state === "LOADING") return;
+  if (audioMixing.state === "PLAYING" || audioMixing.state === "LOADING")
+    return;
   const options = {};
   if (file) {
     options.source = file;
@@ -124,18 +130,20 @@ async function startAudioMixing(file) {
   try {
     audioMixing.state = "LOADING";
     // if the published track will not be used, you had better unpublish it
-    if(localTracks.audioMixingTrack) {
+    if (localTracks.audioMixingTrack) {
       await client.unpublish(localTracks.audioMixingTrack);
     }
     // start audio mixing with local file or the preset file
-    localTracks.audioMixingTrack = await AgoraRTC.createBufferSourceAudioTrack(options);
+    localTracks.audioMixingTrack = await AgoraRTC.createBufferSourceAudioTrack(
+      options
+    );
     await client.publish(localTracks.audioMixingTrack);
     localTracks.audioMixingTrack.play();
     localTracks.audioMixingTrack.startProcessAudioBuffer({ loop: true });
 
     audioMixing.duration = localTracks.audioMixingTrack.duration;
     $(".audio-duration").text(toMMSS(audioMixing.duration));
-    playButton.toggleClass('active', true);
+    playButton.toggleClass("active", true);
     setAudioMixingProgress();
     audioMixing.state = "PLAYING";
     console.log("start audio mixing");
@@ -156,21 +164,21 @@ function stopAudioMixing() {
   $(".progress-bar").css("width", "0%");
   $(".audio-current-time").text(toMMSS(0));
   $(".audio-duration").text(toMMSS(0));
-  playButton.toggleClass('active', false);
+  playButton.toggleClass("active", false);
   cancelAnimationFrame(audioMixingProgressAnimation);
   console.log("stop audio mixing");
 }
 
 function toggleAudioMixing() {
   if (audioMixing.state === "PAUSE") {
-    playButton.toggleClass('active', true);
-    
+    playButton.toggleClass("active", true);
+
     // resume audio mixing
     localTracks.audioMixingTrack.resumeProcessAudioBuffer();
 
     audioMixing.state = "PLAYING";
   } else {
-    playButton.toggleClass('active', false);
+    playButton.toggleClass("active", false);
 
     // pause audio mixing
     localTracks.audioMixingTrack.pauseProcessAudioBuffer();
@@ -182,17 +190,22 @@ function toggleAudioMixing() {
 function setAudioMixingProgress() {
   audioMixingProgressAnimation = requestAnimationFrame(setAudioMixingProgress);
   const currentTime = localTracks.audioMixingTrack.getCurrentTime();
-  $(".progress-bar").css("width", `${currentTime / audioMixing.duration * 100}%`);
+  $(".progress-bar").css(
+    "width",
+    `${(currentTime / audioMixing.duration) * 100}%`
+  );
   $(".audio-current-time").text(toMMSS(currentTime));
 }
 
 // use buffer source audio track to play effect.
 async function playEffect(cycle, options) {
   // if the published track will not be used, you had better unpublish it
-  if(localTracks.audioEffectTrack) {
+  if (localTracks.audioEffectTrack) {
     await client.unpublish(localTracks.audioEffectTrack);
   }
-  localTracks.audioEffectTrack = await AgoraRTC.createBufferSourceAudioTrack(options);
+  localTracks.audioEffectTrack = await AgoraRTC.createBufferSourceAudioTrack(
+    options
+  );
   await client.publish(localTracks.audioEffectTrack);
   localTracks.audioEffectTrack.play();
   localTracks.audioEffectTrack.startProcessAudioBuffer({ cycle });
@@ -204,19 +217,27 @@ async function join() {
   client.on("user-unpublished", handleUserUnpublished);
 
   // join a channel and create local tracks, we can use Promise.all to run them concurrently
-  [ options.uid, localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
-    // join the channel
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // create local tracks, using microphone and camera
-    AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack()
-  ]);
+  [options.uid, localTracks.audioTrack, localTracks.videoTrack] =
+    await Promise.all([
+      // join the channel
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // create local tracks, using microphone and camera
+      AgoraRTC.createMicrophoneAudioTrack(),
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
   // play local video track
   localTracks.videoTrack.play("local-player");
   $("#local-player-name").text(`localVideo(${options.uid})`);
 
   // publish local tracks to channel
-  await client.publish(Object.values(localTracks).filter(track => track !== null));
+  await client.publish(
+    Object.values(localTracks).filter((track) => track !== null)
+  );
   console.log("publish success");
 }
 
@@ -224,7 +245,7 @@ async function leave() {
   stopAudioMixing();
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = null;
@@ -252,7 +273,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -262,7 +283,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }

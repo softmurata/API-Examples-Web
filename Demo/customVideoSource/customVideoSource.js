@@ -1,4 +1,3 @@
-
 /*
  *  These procedures use Agora Video Call SDK for Web to enable local and remote
  *  users to join and leave a Video Call channel managed by Agora Platform.
@@ -17,7 +16,7 @@ var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
  */
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 
 /*
@@ -32,7 +31,7 @@ var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 var currentStream = null;
@@ -55,7 +54,7 @@ $(() => {
     $("#channel").val(options.channel);
     $("#join-form").submit();
   }
-})
+});
 
 /*
  * When a user clicks Join or Leave in the HTML form, this procedure gathers the information
@@ -73,10 +72,13 @@ $("#join-form").submit(async function (e) {
     currentStream = $("#stream-source").val();
     console.log(currentStream);
     await join();
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
   } catch (error) {
@@ -85,28 +87,26 @@ $("#join-form").submit(async function (e) {
     $("#leave").attr("disabled", false);
     $("#switch-channel").attr("disabled", false);
   }
-})
+});
 
 /*
  * Called when a user clicks Leave in order to exit a channel.
  */
 $("#leave").click(function (e) {
   leave();
-})
-
+});
 
 /*
  * Called when a user clicks Switch button to switch input stream.
  */
- $("#switch-channel").click(function (e) {
-    switchChannel();
- })
+$("#switch-channel").click(function (e) {
+  switchChannel();
+});
 
 /*
  * Join a channel, then create local video and audio tracks and publish them to the channel.
  */
 async function join() {
-
   // Add an event listener to play remote tracks when remote user publishes.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
@@ -116,35 +116,47 @@ async function join() {
 
   if (currentStream == "camera") {
     // Join a channel and create local tracks. Best practice is to use Promise.all and run them concurrently.
-    [ options.uid, localTracks.videoTrack ] = await Promise.all([
+    [options.uid, localTracks.videoTrack] = await Promise.all([
       // Join the channel.
-      client.join(options.appid, options.channel, options.token || null, options.uid || null),
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
       // Create tracks to the localcamera.
-      AgoraRTC.createCameraVideoTrack()
+      AgoraRTC.createCameraVideoTrack(),
     ]);
 
     // Publish the local video and audio tracks to the channel.
-    
   } else {
-  
-      var videoFromDiv = document.getElementById("sample-video");
-      // https://developers.google.com/web/updates/2016/10/capture-stream - captureStream() 
-      // can only be called after the video element is able to play video;
-      try {
-        videoFromDiv.play();
-      } catch (e) {
-        console.log(error);
-      }
-      //specify mozCaptureStream for Firefox.
-      var videoStream = (navigator.userAgent.indexOf("Firefox") > -1)? videoFromDiv.mozCaptureStream():videoFromDiv.captureStream();
-      [ options.uid, localTracks.videoTrack ] = await Promise.all([
-        // Join the channel.
-        client.join(options.appid, options.channel, options.token || null, options.uid || null),
-        // Create tracks to the customized video source.
-        AgoraRTC.createCustomVideoTrack({mediaStreamTrack:videoStream.getVideoTracks()[0]})
-      ]);
- 
+    var videoFromDiv = document.getElementById("sample-video");
+    // https://developers.google.com/web/updates/2016/10/capture-stream - captureStream()
+    // can only be called after the video element is able to play video;
+    try {
+      videoFromDiv.play();
+    } catch (e) {
+      console.log(error);
     }
+    //specify mozCaptureStream for Firefox.
+    var videoStream =
+      navigator.userAgent.indexOf("Firefox") > -1
+        ? videoFromDiv.mozCaptureStream()
+        : videoFromDiv.captureStream();
+    [options.uid, localTracks.videoTrack] = await Promise.all([
+      // Join the channel.
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // Create tracks to the customized video source.
+      AgoraRTC.createCustomVideoTrack({
+        mediaStreamTrack: videoStream.getVideoTracks()[0],
+      }),
+    ]);
+  }
 
   await client.publish(Object.values(localTracks));
   // Play the local video track to the local browser and update the UI with the user ID.
@@ -160,7 +172,7 @@ async function join() {
 async function stopCurrentChannel() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -177,7 +189,6 @@ async function stopCurrentChannel() {
   console.log("client leaves channel success");
 }
 async function leave() {
-  
   await stopCurrentChannel();
   $("#join").attr("disabled", false);
   $("#leave").attr("disabled", true);
@@ -187,21 +198,20 @@ async function leave() {
 /*
  *
  */
- async function switchChannel() {
+async function switchChannel() {
   console.log("switchChannel entered");
   let prev = currentStream;
   currentStream = $("#stream-source").val();
 
   if (currentStream == prev) {
     console.log("no change from " + prev + " to" + currentStream);
-  } else if (currentStream != prev){
+  } else if (currentStream != prev) {
     console.log("channel is switched from " + prev + " to" + currentStream);
     await stopCurrentChannel().then(join());
-   //await join();
+    //await join();
     //TO-DO
   }
- }
-
+}
 
 /*
  * Add the local use to a remote channel.
@@ -214,7 +224,7 @@ async function subscribe(user, mediaType) {
   // subscribe to a remote user
   await client.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -224,7 +234,7 @@ async function subscribe(user, mediaType) {
     $("#remote-playerlist").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }

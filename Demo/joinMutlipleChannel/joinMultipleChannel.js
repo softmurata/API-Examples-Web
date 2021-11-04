@@ -1,4 +1,3 @@
-
 /*
  *  These procedures use Agora Video Call SDK for Web to enable 1 local and 2 remote
  *  users to join and leave a Video Call channel managed by Agora Platform.
@@ -18,7 +17,7 @@ var client2 = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
  */
 var localTracks = {
   videoTrack: null,
-  audioTrack: null
+  audioTrack: null,
 };
 
 /*
@@ -33,14 +32,14 @@ var options = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 var options2 = {
   appid: null,
   channel: null,
   uid: null,
-  token: null
+  token: null,
 };
 
 /*
@@ -58,7 +57,7 @@ $(() => {
   options2.token = urlParams.get("token-2");
   options2.uid = Number(urlParams.get("uid-2"));
 
-  if ((options.appid && options.channel) && (options2.appid && options2.channel)) {
+  if (options.appid && options.channel && options2.appid && options2.channel) {
     $("#appid").val(options.appid);
     $("#uid").val(options.uid);
     $("#token").val(options.token);
@@ -68,7 +67,7 @@ $(() => {
     $("#channel-2").val(options2.channel);
     $("#join-form").submit();
   }
-})
+});
 
 /*
  * When a user clicks Join or Leave in the HTML form, this procedure gathers the information
@@ -89,57 +88,65 @@ $("#join-form").submit(async function (e) {
     options2.channel = $("#channel-2").val();
     options2.uid = Number($("#uid-2").val());
     await Promise.all(join(), join2());
-
   } catch (error) {
     console.log(error);
   }
 
   try {
-
-    if(options.token) {
+    if (options.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options.appid}&channel=${options.channel}&token=${options.token}`
+      );
       $("#success-alert").css("display", "block");
     }
-    if(options2.token) {
+    if (options2.token) {
       $("#success-alert-with-token").css("display", "block");
     } else {
-      $("#success-alert a").attr("href", `index.html?appid=${options2.appid}&channel=${options2.channel}&token=${options2.token}`);
+      $("#success-alert a").attr(
+        "href",
+        `index.html?appid=${options2.appid}&channel=${options2.channel}&token=${options2.token}`
+      );
       $("#success-alert").css("display", "block");
     }
-
   } catch (error) {
     console.error(error);
   } finally {
     $("#leave").attr("disabled", false);
   }
-})
+});
 
 /*
  * Called when a user clicks Leave in order to exit a channel.
  */
 $("#leave").click(function (e) {
   leave();
-})
+});
 
 /*
  * Join a channel, then create local video and audio tracks and publish them to the channel.
  */
 async function join() {
-
   // Add an event listener to play remote tracks when remote user publishes.
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
   // Join a channel and create local tracks. Best practice is to use Promise.all and run them concurrently.
-  [ options.uid, localTracks.audioTrack, localTracks.videoTrack ] = await Promise.all([
-    // Join the channel.
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // Create tracks to the local microphone and camera.
-    AgoraRTC.createMicrophoneAudioTrack(),
-    AgoraRTC.createCameraVideoTrack()
-  ]);
+  [options.uid, localTracks.audioTrack, localTracks.videoTrack] =
+    await Promise.all([
+      // Join the channel.
+      client.join(
+        options.appid,
+        options.channel,
+        options.token || null,
+        options.uid || null
+      ),
+      // Create tracks to the local microphone and camera.
+      AgoraRTC.createMicrophoneAudioTrack(),
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
 
   // Play the local video track to the local browser and update the UI with the user ID.
   localTracks.videoTrack.play("local-player");
@@ -151,7 +158,6 @@ async function join() {
 }
 
 async function join2() {
-
   // Add an event listener to play remote tracks when remote user publishes.
   client2.on("user-published", handleUserPublished2);
   client2.on("user-unpublished", handleUserUnpublished);
@@ -159,7 +165,12 @@ async function join2() {
   // Join a channel and create local tracks. Best practice is to use Promise.all and run them concurrently.
   options2.uid = await Promise.all([
     // Join the channel.
-    client2.join(options2.appid, options2.channel, options2.token || null, options2.uid || null),
+    client2.join(
+      options2.appid,
+      options2.channel,
+      options2.token || null,
+      options2.uid || null
+    ),
   ]);
 }
 
@@ -169,7 +180,7 @@ async function join2() {
 async function leave() {
   for (trackName in localTracks) {
     var track = localTracks[trackName];
-    if(track) {
+    if (track) {
       track.stop();
       track.close();
       localTracks[trackName] = undefined;
@@ -203,7 +214,7 @@ async function subscribe(user, mediaType, clientName) {
   // subscribe to a remote user
   await clientName.subscribe(user, mediaType);
   console.log("subscribe success");
-  if (mediaType === 'video') {
+  if (mediaType === "video") {
     const player = $(`
       <div id="player-wrapper-${uid}">
         <p class="player-name">remoteUser(${uid})</p>
@@ -213,7 +224,7 @@ async function subscribe(user, mediaType, clientName) {
     $("#remote-playerlists").append(player);
     user.videoTrack.play(`player-${uid}`);
   }
-  if (mediaType === 'audio') {
+  if (mediaType === "audio") {
     user.audioTrack.play();
   }
 }
