@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { Button } from "@mui/material"
+import { FormGroup, FormControl, Input, InputLabel, FormHelperText } from "@mui/material"
 
 function HomePage() {
   let history = useHistory();
@@ -16,7 +18,24 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      <form className="call-form" onSubmit={onSubmit}>
+      <FormGroup style={{ padding: 20}}>
+        <FormControl style={{ padding: 20}}>
+            <InputLabel htmlFor="roomid">AppID</InputLabel>
+            <Input id="roomid" aria-describedby="roomid-helper-text" type="text" name="roomid" onChange={(event) => setRoomId(event.target.value)}/>
+        </FormControl>
+        <FormControl style={{ padding: 20}}>
+            <InputLabel htmlFor="channel">Channel</InputLabel>
+            <Input id="channel" type="text" name="channel" onChange={(event) => setChannel(event.target.value)}/>
+        </FormControl>
+        <FormControl style={{ padding: 20}}>
+            <InputLabel htmlFor="username">Username</InputLabel>
+            <Input id="username" type="text" name="username" onChange={(event) => setUsername(event.target.value)}/>
+        </FormControl>
+        {/* cannot adjust best button */}
+        <Button onClick={onSubmit} color="primary" size="small" variant="contained" fullWidth={false}>Submit</Button>
+      </FormGroup>
+
+      {/*<form className="call-form" onSubmit={onSubmit}>
         <label>
           AppID:
           <input
@@ -42,7 +61,7 @@ function HomePage() {
           />
         </label>
         <input type="submit" value="Submit" />
-      </form>
+  </form>*/}
     </div>
   );
 }
