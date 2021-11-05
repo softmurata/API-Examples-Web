@@ -1,12 +1,8 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
 
 function InputFile() {
-    return (
-        <div>
-            
-        </div>
-    )
+  return <div></div>;
 }
 
-export default InputFile
+export default InputFile;

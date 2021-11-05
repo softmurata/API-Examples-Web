@@ -36,7 +36,7 @@ function ChatRoom(props: any) {
       <div>
         {/*File: {props.location.state.value}*/}
         {/*<img src={props.location.state.value}/>*/}
-        <Three url={props.location.state.value}/>
+        <Three url={props.location.state.value} />
       </div>
       {/* Navbar.tsx */}
       {/* MediaPlayer.tsx */}
