@@ -106,6 +106,7 @@ function MediaPipe() {
             }}/>
 
             <canvas
+            id="mediapipe"
             ref = {canvasRef}
             style={{
                 position: "absolute",
