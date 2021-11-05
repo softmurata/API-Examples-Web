@@ -6,7 +6,6 @@ import ChatRoom from "./pages/ChatRoom";
 import Preview from "./pages/Preview";
 import ChatRoomWithCustomVideo from "./pages/ChatRoomWithCustomVideo";  // with mediapipe holistic
 
-// import Three from "./Three"
 import MediaPipe from "./MediaPipe";
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
         </Switch>
       </BrowserRouter>
       <MediaPipe />
-      {/*<Three />*/}
     </>
   );
 }
