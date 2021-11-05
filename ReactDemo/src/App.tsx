@@ -6,6 +6,7 @@ import ChatRoom from "./pages/ChatRoom";
 import Preview from "./pages/Preview";
 
 // import Three from "./Three"
+import MediaPipe from "./MediaPipe";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route exact path="/preview" component={Preview} />
         </Switch>
       </BrowserRouter>
+      <MediaPipe />
       {/*<Three />*/}
     </>
   );
