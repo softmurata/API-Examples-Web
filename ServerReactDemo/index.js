@@ -11,7 +11,7 @@ const cors = require('cors')
 //   .catch(err => console.error(err));
 
 
-const mongoURI = "mongodb+srv://murata:murata@cluster0.11bza.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+const mongoURI = ""
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
