@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
 import ChatRoom from "./pages/ChatRoom";
+import Upload from "./pages/Upload";
 import Preview from "./pages/Preview";
 import ChatRoomWithCustomVideo from "./pages/ChatRoomWithCustomVideo"; // with mediapipe holistic
 

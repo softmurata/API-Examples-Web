@@ -1,14 +1,11 @@
-import React from "react";
-import Navbar from "../components/Navbar";
+import React from 'react'
 
 function Preview() {
-  return (
-    <div>
-      {/* navbar.tsx */}
-      <Navbar />
-      Preview
-    </div>
-  );
+    return (
+        <div>
+            Preview Page
+        </div>
+    )
 }
 
-export default Preview;
+export default Preview

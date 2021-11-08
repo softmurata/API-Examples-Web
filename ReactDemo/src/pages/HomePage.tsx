@@ -22,6 +22,7 @@ function HomePage() {
   const [isDrop, setDrop] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
+  const [filename, setFileName] = useState("");
 
 
   const accept = ".vrm";
@@ -29,7 +30,8 @@ function HomePage() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setDrop(true);
     setFiles(acceptedFiles);
-  }, []);
+    setFileName(acceptedFiles[0].name)
+  }, [filename]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept,
@@ -113,11 +115,13 @@ function HomePage() {
                 <Typography>Drop the files here ...</Typography>
               ) : (
                 <Typography>
-                  Drag 'n' drop some files here, or click to select files
+                  Drag 1 drop some file here, or click to select 1 file
                 </Typography>
               )
             ) : (
-              <h2>successfully uploaded !!</h2>
+              <Typography>
+                {filename}
+              </Typography>
             )}
           </Paper>
         </Box>

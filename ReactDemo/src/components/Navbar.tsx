@@ -41,6 +41,9 @@ function Navbar() {
           <Link to="/" className={classes.link}>
             Home
           </Link>
+          <Link to="/upload" className={classes.link}>
+            Upload
+          </Link>
           <Link to="/preview" className={classes.link}>
             Preview
           </Link>
