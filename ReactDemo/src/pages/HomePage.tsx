@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { Button } from "@mui/material";
+import { Button, SnackbarCloseReason } from "@mui/material";
 import {
-  FormGroup,
   FormControl,
   Input,
   InputLabel,
   Box,
   Paper,
   Typography,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 
@@ -20,10 +21,11 @@ function HomePage() {
   const [username, setUsername] = useState("");
   const [isDrop, setDrop] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [open, setOpen] = useState(false);
+
 
   const accept = ".vrm";
 
-  // react dropzone method
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setDrop(true);
     setFiles(acceptedFiles);
@@ -34,19 +36,20 @@ function HomePage() {
     onDrop,
   });
 
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
+
+  const handleClose = (event:SyntheticEvent<Element, Event>) => {
+    console.log(event);
+    setOpen(false);
+  };
+
 
   const onSubmit = (e: any) => {
     e.preventDefault();
-
-    // original code for  transfer chatroom page
-    // history.push(`/chatroom/${roomId}/${channel}/${username}`);
-
-    // new code
+    if(files.length === 0){
+      setOpen(true)
+      return
+    }
     let url = URL.createObjectURL(files[0]);
-
     history.replace({
       pathname: `/chatroom/${roomId}/${channel}/${username}`,
       state: {
@@ -58,8 +61,13 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      <FormGroup style={{ padding: 20 }}>
-        <FormControl style={{ padding: 20 }}>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical:"top", horizontal:"center" }}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          Error! Please submit a VRM file
+        </Alert>
+      </Snackbar>
+      <form onSubmit={onSubmit} style={{padding:20}}>
+        <FormControl style={{ padding: 20 }} required>
           <InputLabel htmlFor="roomid">AppID</InputLabel>
           <Input
             id="roomid"
@@ -69,7 +77,7 @@ function HomePage() {
             onChange={(event) => setRoomId(event.target.value)}
           />
         </FormControl>
-        <FormControl style={{ padding: 20 }}>
+        <FormControl style={{ padding: 20 }} required>
           <InputLabel htmlFor="channel">Channel</InputLabel>
           <Input
             id="channel"
@@ -78,7 +86,7 @@ function HomePage() {
             onChange={(event) => setChannel(event.target.value)}
           />
         </FormControl>
-        <FormControl style={{ padding: 20 }}>
+        <FormControl style={{ padding: 20 }} required>
           <InputLabel htmlFor="username">Username</InputLabel>
           <Input
             id="username"
@@ -113,45 +121,17 @@ function HomePage() {
             )}
           </Paper>
         </Box>
-        {/* cannot adjust best button */}
         <Button
-          onClick={onSubmit}
+          type="submit"
           color="primary"
-          size="small"
+          size="medium"
           variant="contained"
+          style={{marginTop:50}}
           fullWidth={false}
         >
-          Submit
+          Join
         </Button>
-      </FormGroup>
-
-      {/*<form className="call-form" onSubmit={onSubmit}>
-            <label>
-            AppID:
-            <input
-                type="text"
-                name="roomId"
-                onChange={(event) => setRoomId(event.target.value)}
-            />
-            </label>
-            <label>
-            Channel
-            <input
-                type="text"
-                name="channel"
-                onChange={(event) => setChannel(event.target.value)}
-            />
-            </label>
-            <label>
-            Username
-            <input
-                type="text"
-                name="username"
-                onChange={(event) => setUsername(event.target.value)}
-            />
-            </label>
-            <input type="submit" value="Submit" />
-    </form>*/}
+      </form>
     </div>
   );
 }

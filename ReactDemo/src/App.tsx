@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ChatRoom from "./pages/ChatRoom";
 import Preview from "./pages/Preview";
-import ChatRoomWithCustomVideo from "./pages/ChatRoomWithCustomVideo";  // with mediapipe holistic
+import ChatRoomWithCustomVideo from "./pages/ChatRoomWithCustomVideo"; // with mediapipe holistic
 
 import MediaPipe from "./MediaPipe";
 
@@ -17,11 +17,12 @@ function App() {
           <Route
             exact
             path="/chatroom/:roomId/:channel/:username"
-            component={ChatRoomWithCustomVideo} />
+            component={ChatRoomWithCustomVideo}
+          />
           <Route exact path="/preview" component={Preview} />
         </Switch>
       </BrowserRouter>
-      <MediaPipe />
+      {/*<MediaPipe />*/}
     </>
   );
 }
