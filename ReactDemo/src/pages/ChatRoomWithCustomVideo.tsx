@@ -138,7 +138,7 @@ function ChatRoomWithCustomVideo(props: any) {
     const videoMediaStreamTrack = (
       document.getElementById("mediapipe") as HTMLCanvasElement
     )
-      .captureStream(20)
+      .captureStream(60)
       .getVideoTracks()[0];
     const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack();
     const cameraTrack = await AgoraRTC.createCustomVideoTrack({
