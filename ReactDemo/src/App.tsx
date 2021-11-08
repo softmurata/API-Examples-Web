@@ -21,6 +21,7 @@ function App() {
             component={ChatRoomWithCustomVideo}
           />
           <Route exact path="/preview" component={Preview} />
+          <Route exact path="/upload" component={Upload} />
         </Switch>
       </BrowserRouter>
       {/*<MediaPipe />*/}

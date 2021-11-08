@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
+import { useHistory } from "react-router-dom";
 import axios from "axios"
 
 // helper function
@@ -115,10 +116,13 @@ function getThumbnail(jsonData: any, buffer: any, offset: any) {
 
 function Preview() {
 
+  let history = useHistory();
+
   const [vrmFiles, setVrmfiles] = useState([]);
   const [vrmThumbnails, setVrmThumbnails ] = useState([]);
   const [imgurl, setImgurl] = useState<any>(null);
   const [vrmurl, setVrmurl] = useState<any>(null);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   const [files, setFiles ] = useState<File[]>([])
   const [filename, setFileName] = useState("");
@@ -143,19 +147,6 @@ function Preview() {
 
     reader.addEventListener('load', onLoadHandler, true)
     reader.readAsArrayBuffer(input)
-
-    // api
-    let variables = {
-      url: "https://google.com"
-    }
-    axios.post("http://localhost:5000/api/preview/uploadfiles", variables)
-    .then((response) => {
-      if (response.data.success){
-        console.log(response.data.url);
-      } else {
-        alert("failed to get url");
-      }
-    })
 
 
   }, [])
@@ -194,6 +185,26 @@ function Preview() {
   
   }
 
+  const onUpload = (e: any) => {
+    e.preventDefault();
+
+    // api
+    let formData = new FormData()
+    formData.append("file", files[0]);
+
+    axios.post("http://localhost:5000/api/preview/uploadfiles", formData)
+    .then((response) => {
+      if (response.data.success){
+        console.log(response.data.url);
+        setDownloadUrl(response.data.url);
+      } else {
+        alert("failed to get url");
+      }
+
+    })
+
+  }
+
   return (
     <div>
       {/* navbar.tsx */}
@@ -221,13 +232,14 @@ function Preview() {
                 <Typography>{filename}</Typography>
               </div>
             )}
-
         </Paper>
       </Box>
       {/*  for test */}
       <div style={{ paddingTop: 30}}>
         <img src={imgurl} width={320} height={240}/>
       </div>
+      <button onClick={onUpload}>Upload</button>
+      <a href={downloadUrl}>Download</a>
     </div>
   );
 }

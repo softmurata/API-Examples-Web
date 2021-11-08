@@ -10,8 +10,8 @@ const cors = require('cors')
 //   .then(() => console.log("DB connected"))
 //   .catch(err => console.error(err));
 
-
-const mongoURI = ""
+require('dotenv').config();
+const mongoURI = process.env.MONGOURI // "mongodb+srv://murata:murata@cluster0.11bza.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use('/api/preview', require('./routes/preview'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('../uploads'));
 
 const port = process.env.PORT || 5000
 
