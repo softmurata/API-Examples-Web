@@ -11,7 +11,7 @@ const cors = require('cors')
 //   .catch(err => console.error(err));
 
 require('dotenv').config();
-const mongoURI = process.env.MONGOURI // "mongodb+srv://murata:murata@cluster0.11bza.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+const mongoURI = process.env.MONGOURI
 
 const mongoose = require("mongoose");
 const connect = mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
