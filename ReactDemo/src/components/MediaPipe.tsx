@@ -1,25 +1,13 @@
-import {
-  ILocalVideoTrack,
-  IRemoteVideoTrack,
-  ILocalAudioTrack,
-  IRemoteAudioTrack,
-} from "agora-rtc-sdk-ng";
 import React, { useRef, useEffect } from "react";
 import { FaceMesh } from "@mediapipe/face_mesh";
 import * as Facemesh from "@mediapipe/face_mesh";
 import * as cam from "@mediapipe/camera_utils";
+import Webcam from "react-webcam";
 
-export interface VideoPlayerProps {
-  videoTrack: ILocalVideoTrack | IRemoteVideoTrack | undefined;
-  audioTrack: ILocalAudioTrack | IRemoteAudioTrack | undefined;
-}
-
-const MediaPlayer = (props: VideoPlayerProps) => {
+function MediaPipe() {
   const webcamRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
   let camera: cam.Camera | null = null;
-
-  const container = useRef<HTMLDivElement>(null);
 
   const connect = (global as any).window.drawConnectors;
 
@@ -107,29 +95,21 @@ const MediaPlayer = (props: VideoPlayerProps) => {
     }
   });
 
-  useEffect(() => {
-    if (!container.current) return;
-    props.videoTrack?.play(container.current);
-    return () => {
-      props.videoTrack?.stop();
-    };
-  }, [container, props.videoTrack]);
-  useEffect(() => {
-    if (props.audioTrack) {
-      props.audioTrack?.play();
-    }
-    return () => {
-      props.audioTrack?.stop();
-    };
-  }, [props.audioTrack]);
-  
   return (
     <>
-      <div
-        ref={container}
-        className="video-player"
-        style={{ width: "320px", height: "240px" }}
-      ></div>
+      <Webcam
+        ref={webcamRef}
+        style={{
+          position: "absolute",
+          marginRight: "auto",
+          left: 0,
+          right: 0,
+          textAlign: "center",
+          zIndex: 9,
+          width: 640,
+          height: 480,
+        }}
+      />
       <canvas
         ref={canvasRef}
         style={{
@@ -145,6 +125,6 @@ const MediaPlayer = (props: VideoPlayerProps) => {
       ></canvas>
     </>
   );
-};
+}
 
-export default MediaPlayer;
+export default MediaPipe;
